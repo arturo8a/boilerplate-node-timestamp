@@ -24,12 +24,23 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+app.get("/api", function (req, res) {
+  const date = new Date();
+  res.json({unix:date.getTime(), utc:date.toUTCString()});
+});
 // your first API endpoint... 
 app.get("/api/:datetime", function (req, res) {
-  res.json({greeting: 'hello' + req.params.datetime});
+  const dateParam = req.params.datetime;
+  let dateObj = (/^[0-9]+$/ig.test(dateParam)) ? new Date(parseInt(dateParam)) : new Date(dateParam);
+
+  if(dateObj !== "Invalid Date" && !isNaN(dateObj))
+  {
+    res.json({unix: Math.floor(dateObj.getTime()), utc: dateObj.toUTCString()});
+  }else{
+    res.json({ error : "Invalid Date" });
+  }
+    
 });
-
-
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
